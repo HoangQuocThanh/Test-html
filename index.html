@@ -1,67 +1,13 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>In và xóa iframe sau khi in</title>
-</head>
-<body>
+<html>
+  <body>
+    <button onclick="openAndPrint()">In hóa đơn</button>
 
-  <h2>In hóa đơn</h2>
-  <button onclick="printInvoice()">In hóa đơn</button>
-
-  <script>
-    function printInvoice() {
-      // Tạo iframe mới
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = '0';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow.document;
-
-      const html = `
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial; padding: 20px; }
-              h1 { color: #2c3e50; }
-              table { width: 100%; border-collapse: collapse; }
-              td, th { border: 1px solid #ccc; padding: 8px; }
-            </style>
-          </head>
-          <body>
-            <h1>Hóa đơn bán hàng</h1>
-            <p>Ngày: ${new Date().toLocaleDateString()}</p>
-            <table>
-              <tr><th>Sản phẩm</th><th>Số lượng</th><th>Giá</th></tr>
-              <tr><td>Nhớt xe</td><td>1</td><td>120,000đ</td></tr>
-              <tr><td>Vệ sinh bugi</td><td>1</td><td>30,000đ</td></tr>
-            </table>
-            <p><strong>Tổng cộng: 150,000đ</strong></p>
-          </body>
-        </html>
-      `;
-
-      doc.open();
-      doc.write(html);
-      doc.close();
-
-      // Đợi iframe load rồi in
-      setTimeout(() => {
-		iframe.contentWindow.focus();
-		iframe.contentWindow.print();
-
-		// Chờ 1.5 giây sau khi gọi print rồi mới remove iframe
-		setTimeout(() => {
-		  document.body.removeChild(iframe);
-		}, 1500);
-	  }, 500);
-    }
-  </script>
-
-</body>
+    <script>
+      function openAndPrint() {
+        const win = window.open('popup.html', '_blank');
+        if (!win) alert('Bị chặn popup rồi!');
+      }
+    </script>
+  </body>
 </html>
