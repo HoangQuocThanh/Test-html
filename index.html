@@ -2,21 +2,19 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Xuất PDF không cần in</title>
+  <title>Xuất PDF – Hình có CORS</title>
   <style>
+    body { font-family: Arial; }
     #printContainer {
-      width: 794px; /* A4 chiều ngang: 210mm = 794px @ 96dpi */
+      width: 794px;
+      margin: 40px auto;
       padding: 20px;
       background: white;
       border: 1px solid #ccc;
-      margin: auto;
     }
-
     .image-box {
-      width: 100%;
       margin-bottom: 20px;
     }
-
     .image-box img {
       width: 100%;
       height: auto;
@@ -25,15 +23,15 @@
 </head>
 <body>
 
-<h2>Demo xuất PDF</h2>
+<h2 style="text-align:center;">Demo Xuất PDF (Hình hỗ trợ CORS)</h2>
 <button onclick="saveAsPDF()">Lưu thành PDF</button>
 
 <div id="printContainer">
   <div class="image-box">
-    <img src="https://cwatch.comodo.com/images-new/online-url-scanner.png" />
+    <img src="https://via.placeholder.com/800x600.png?text=Hinh+1" crossorigin="anonymous" />
   </div>
   <div class="image-box">
-    <img src="https://cwatch.comodo.com/images-new/online-url-scanner.png" />
+    <img src="https://via.placeholder.com/800x600.png?text=Hinh+2" crossorigin="anonymous" />
   </div>
 </div>
 
@@ -45,31 +43,29 @@
     const { jsPDF } = window.jspdf;
     const container = document.getElementById('printContainer');
 
+    await Promise.all(
+      Array.from(container.querySelectorAll("img")).map(img =>
+        img.complete ? Promise.resolve() : new Promise(res => img.onload = res)
+      )
+    );
+
     const canvas = await html2canvas(container, {
-      scale: 2, // độ phân giải cao hơn
+      scale: 2,
       useCORS: true
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-    // Kích thước trang A4 (portrait) tính bằng mm
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // Tính lại tỷ lệ cho phù hợp trang
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pageWidth;
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    if (pdfHeight > pageHeight) {
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    } else {
-      const yOffset = (pageHeight - pdfHeight) / 2;
-      pdf.addImage(imgData, 'JPEG', 0, yOffset, pdfWidth, pdfHeight);
-    }
-
-    pdf.save('in-hinh.pdf');
+    const yOffset = (pageHeight - pdfHeight) / 2;
+    pdf.addImage(imgData, "JPEG", 0, yOffset > 0 ? yOffset : 0, pdfWidth, pdfHeight);
+    pdf.save("hinh.pdf");
   }
 </script>
 
