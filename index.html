@@ -2,59 +2,76 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>iPhone Safe Print Demo</title>
+  <title>Xuất PDF không cần in</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    #printContainer {
+      width: 794px; /* A4 chiều ngang: 210mm = 794px @ 96dpi */
       padding: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      margin: auto;
     }
 
-    #printArea {
-      border: 2px dashed #999;
-      padding: 20px;
-      margin-top: 20px;
+    .image-box {
+      width: 100%;
+      margin-bottom: 20px;
     }
 
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-
-      #printArea {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: white;
-      }
-
-      @page {
-        margin: 0;
-        size: A4 portrait;
-      }
+    .image-box img {
+      width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
 
-  <h2>iPhone Safe Print Demo</h2>
-  <button id="printBtn">In thử</button>
+<h2>Demo xuất PDF</h2>
+<button onclick="saveAsPDF()">Lưu thành PDF</button>
 
-  <div id="printArea">
-    <h1>Nội dung sẽ được in</h1>
-    <p>Đây là nội dung test in không bị chặn trên iPhone.</p>
-    <img src="https://cwatch.comodo.com/images-new/online-url-scanner.png" style="max-width:100%; height:auto;" />
+<div id="printContainer">
+  <div class="image-box">
+    <img src="https://cwatch.comodo.com/images-new/online-url-scanner.png" />
   </div>
+  <div class="image-box">
+    <img src="https://cwatch.comodo.com/images-new/online-url-scanner.png" />
+  </div>
+</div>
 
-  <script>
-    document.getElementById('printBtn').addEventListener('click', function () {
-      window.print(); // phải nằm trực tiếp trong sự kiện click
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  async function saveAsPDF() {
+    const { jsPDF } = window.jspdf;
+    const container = document.getElementById('printContainer');
+
+    const canvas = await html2canvas(container, {
+      scale: 2, // độ phân giải cao hơn
+      useCORS: true
     });
-  </script>
+
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+    // Kích thước trang A4 (portrait) tính bằng mm
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // Tính lại tỷ lệ cho phù hợp trang
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pageWidth;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    if (pdfHeight > pageHeight) {
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    } else {
+      const yOffset = (pageHeight - pdfHeight) / 2;
+      pdf.addImage(imgData, 'JPEG', 0, yOffset, pdfWidth, pdfHeight);
+    }
+
+    pdf.save('in-hinh.pdf');
+  }
+</script>
+
 </body>
 </html>
