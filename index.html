@@ -51,17 +51,15 @@
       doc.close();
 
       // Đợi iframe load rồi in
-      iframe.onload = function () {
-        iframe.contentWindow.focus();
+      setTimeout(() => {
+		iframe.contentWindow.focus();
+		iframe.contentWindow.print();
 
-        // Gọi print
-        iframe.contentWindow.print();
-
-        // Sau khi in xong (delay 1 chút để tránh bị chặn)
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 500);
-      };
+		// Chờ 1.5 giây sau khi gọi print rồi mới remove iframe
+		setTimeout(() => {
+		  document.body.removeChild(iframe);
+		}, 1500);
+	  }, 500);
     }
   </script>
 
