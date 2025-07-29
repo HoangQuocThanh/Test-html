@@ -12,20 +12,15 @@
   <p>Sản phẩm B - 500.000đ</p>
 
   <script>
-    // Chỉ reload 1 lần để Safari cho in
-    if (!location.hash.includes('reloaded')) {
-      location.hash = '#reloaded';
-      location.reload();
-    } else {
+   
       setTimeout(() => {
         window.print();
       }, 300);
 	  
 	  // Sau khi in xong, tự đóng tab (chỉ hoạt động nếu tab được mở bằng window.open từ user)
-		window.onafterprint = function () {
-		  window.close();
-		};
-    }
+	window.onafterprint = function () {
+	  window.close();
+	};
   </script>
 </body>
 </html>
