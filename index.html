@@ -2,33 +2,25 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>In qua iframe không bị cảnh báo iOS</title>
-  <style>
-    #preview-area {
-      margin-top: 20px;
-      border: 1px solid #ccc;
-    }
-    #print-frame {
-      width: 100%;
-      height: 300px;
-      border: none;
-    }
-  </style>
+  <title>In và xóa iframe sau khi in</title>
 </head>
 <body>
 
   <h2>In hóa đơn</h2>
-  <button onclick="renderInvoice()">Xem trước & In</button>
-  <div id="preview-area" style="display: none;">
-    <h3>Xem trước</h3>
-    <iframe id="print-frame"></iframe>
-    <br>
-    <button onclick="printIframe()">In ngay</button>
-  </div>
+  <button onclick="printInvoice()">In hóa đơn</button>
 
   <script>
-    function renderInvoice() {
-      const iframe = document.getElementById('print-frame');
+    function printInvoice() {
+      // Tạo iframe mới
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      document.body.appendChild(iframe);
+
       const doc = iframe.contentWindow.document;
 
       const html = `
@@ -58,14 +50,18 @@
       doc.write(html);
       doc.close();
 
-      // Hiện khung xem trước
-      document.getElementById('preview-area').style.display = 'block';
-    }
+      // Đợi iframe load rồi in
+      iframe.onload = function () {
+        iframe.contentWindow.focus();
 
-    function printIframe() {
-      const iframe = document.getElementById('print-frame');
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
+        // Gọi print
+        iframe.contentWindow.print();
+
+        // Sau khi in xong (delay 1 chút để tránh bị chặn)
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 500);
+      };
     }
   </script>
 
