@@ -1,32 +1,61 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <button onclick="printIframe()">In hóa đơn</button>
+<head>
+  <meta charset="UTF-8">
+  <title>In bằng iframe</title>
+</head>
+<body>
+  <button onclick="printContent()">In nội dung</button>
 
-<iframe id="printFrame" style="display:none;"></iframe>
+  <script>
+    function printContent() {
+      // Tạo iframe ẩn
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
 
-<script>
-	function printIframe() {
-	  const iframe = document.getElementById('printFrame');
-	  const doc = iframe.contentWindow.document;
+      const doc = iframe.contentWindow.document;
 
-	  doc.open();
-	  doc.write(`
-		<html>
-		  <head>
-			<title>Hóa đơn</title>
-			<style>
-			  body { font-family: Arial; padding: 20px; }
-			</style>
-		  </head>
-		  <body onload="setTimeout(() => { window.focus(); window.print(); }, 300)">
-			<h1>Đây là hóa đơn</h1>
-			<p>Sản phẩm A - 1.000.000đ</p>
-		  </body>
-		</html>
-	  `);
-	  doc.close();
-	}
-	</script>
-  </body>
+      // Nội dung HTML sẽ in
+      const content = `
+        <html>
+          <head>
+            <title>Print</title>
+            <script>
+              window.onload = function () {
+                setTimeout(function () {
+                  window.print();
+                  setTimeout(function () {
+                    parent.postMessage('close-iframe', '*');
+                  }, 1000);
+                }, 300);
+              };
+            <\/script>
+          </head>
+          <body>
+            <h2>Đây là nội dung sẽ được in</h2>
+            <p>Chạy tốt trên Safari, iPad, Chrome...</p>
+          </body>
+        </html>
+      `;
+
+      // Ghi nội dung vào iframe
+      doc.open();
+      doc.write(content);
+      doc.close();
+    }
+
+    // Nghe tín hiệu từ iframe để xóa nó
+    window.addEventListener('message', function (event) {
+      if (event.data === 'close-iframe') {
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+          if (iframe.style.display === 'none') {
+            iframe.remove();
+          }
+        });
+      }
+    });
+  </script>
+</body>
 </html>
