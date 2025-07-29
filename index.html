@@ -56,6 +56,10 @@
     }
 
     @media print {
+	#app {
+		display: none !important;
+	  }
+	
 	  html, body {
 		margin: 0;
 		padding: 0;
@@ -148,6 +152,7 @@
   </style>
 </head>
 <body>
+	<div id="app">
   <h2 class="no-print">Demo In Hình Ảnh Tuỳ Số Lượng</h2>
 
   <div class="settings no-print">
@@ -179,7 +184,7 @@
       }
     </script>
   </div>
-
+</div>
   <div id="print-section"></div>
 
   <script>
