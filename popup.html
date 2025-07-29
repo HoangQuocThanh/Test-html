@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>In hóa đơn</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+  </style>
+</head>
+<body>
+  <h1>HÓA ĐƠN</h1>
+  <p>Sản phẩm A - 1.000.000đ</p>
+  <p>Sản phẩm B - 500.000đ</p>
+
+  <script>
+    // Chỉ reload 1 lần để Safari cho in
+    if (!location.hash.includes('reloaded')) {
+      location.hash = '#reloaded';
+      location.reload();
+    } else {
+      setTimeout(() => {
+        window.print();
+      }, 300);
+	  
+	  // Sau khi in xong, tự đóng tab (chỉ hoạt động nếu tab được mở bằng window.open từ user)
+		window.onafterprint = function () {
+		  window.close();
+		};
+    }
+  </script>
+</body>
+</html>
