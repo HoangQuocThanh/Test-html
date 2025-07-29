@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <button onclick="openAndPrint()">In hóa đơn</button>
+    <button onclick="printIframe()">In hóa đơn</button>
 
-    <script>
-      function openAndPrint() {
-        const win = window.open('popup.html', '_blank');
-        if (!win) alert('Bị chặn popup rồi!');
-      }
-    </script>
+<iframe id="printFrame" style="display:none;"></iframe>
+
+<script>
+	function printIframe() {
+	  const iframe = document.getElementById('printFrame');
+	  const doc = iframe.contentWindow.document;
+
+	  doc.open();
+	  doc.write(`
+		<html>
+		  <head>
+			<title>Hóa đơn</title>
+			<style>
+			  body { font-family: Arial; padding: 20px; }
+			</style>
+		  </head>
+		  <body onload="setTimeout(() => { window.focus(); window.print(); }, 300)">
+			<h1>Đây là hóa đơn</h1>
+			<p>Sản phẩm A - 1.000.000đ</p>
+		  </body>
+		</html>
+	  `);
+	  doc.close();
+	}
+	</script>
   </body>
 </html>
