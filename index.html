@@ -2,234 +2,238 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>In hình ảnh theo trang</title>
+  <title>Print Images Smart</title>
   <style>
     body {
-      font-family: Arial;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
     }
 
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
+    .no-print {
+      padding: 10px;
+      background: #f5f5f5;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      margin-bottom: 20px;
+      padding: 20px;
     }
 
-    .image-container {
+    .img-wrapper {
       position: relative;
-      width: 200px;
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 10px;
+      text-align: center;
     }
 
-    .image-container img {
-      width: 100%;
-      height: auto;
-    }
-
-    .tooltip-select {
+    .img-wrapper input[type="checkbox"] {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2px 6px;
-      font-size: 12px;
-      border-radius: 4px;
+      top: 10px;
+      left: 10px;
+      transform: scale(1.3);
     }
 
-    #print-section {
+    .img-wrapper img,
+    .img-wrapper .text-box {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .text-box {
+      background: #eaeaea;
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .print-container {
       display: none;
     }
 
-    body.printing .gallery,
-    body.printing .no-print,
-    body.printing .settings {
-      display: none !important;
-    }
-
-    body.printing #print-section {
-      display: block;
-    }
-
-    .settings {
-      margin-bottom: 16px;
-    }
-
+    /* IN ẤN */
     @media print {
-	  html, body {
+	  @page {
+		size: A4;
+		margin: 0;
+	  }
+
+	  body {
 		margin: 0;
 		padding: 0;
-		width: 100%;
-		height: 100%;
 	  }
 
-	  .shared-group,
-	  .solo-image {
-		width: 100%;
-		height: 100vh;
-		padding: 12px;
-		box-sizing: border-box;
-		break-inside: avoid;
+	  .no-print,
+	  .image-grid {
+		display: none !important;
 	  }
 
-	  .shared-group:not(:last-of-type),
-	  .solo-image:not(:last-of-type) {
+	  .print-container {
+		display: block;
+	  }
+
+	  .print-page {
 		page-break-after: always;
-	  }
-
-	  .shared-group.count-4 {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-		gap: 8px;
+		grid-template-columns: repeat(2, 1fr);
+		grid-auto-rows: auto;
+		padding: 0;
+		margin: 0;
 	  }
 
-	  .shared-group.count-3 {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-		gap: 8px;
+	  .print-item {
+		padding: 0;
+		margin: 0;
+		text-align: center;
 	  }
 
-	  <!-- .shared-group.count-3 .print-image:nth-child(3) { -->
-		<!-- grid-column: span 2; -->
-	  <!-- } -->
-
-	  .shared-group.count-2 {
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: 1fr 1fr;
-		gap: 8px;
-	  }
-
-	  .shared-group.count-1 {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	  }
-	  
-	  .print-image.empty {
-		  background-color: white;
-		  border: none;
-		}
-
-	  .print-image {
-		display: flex;
-		justify-content: center;
-		align-items: center;
+	  .print-item img,
+	  .print-item .text-box {
 		width: 100%;
-		height: 100%;
+		height: auto;
+		page-break-inside: avoid;
 	  }
 
-	  .print-image img {
-		width: 100%;
-		height: 100%;
+	  .print-single-page {
+		page-break-before: always;
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+		padding: 0;
+	  }
+
+	  .print-single-page img,
+	  .print-single-page .text-box {
+		width: 100vw;
+		height: 100vh;
 		object-fit: contain;
 	  }
-	  
-	  .solo-image {
-		  display: flex;
-		  justify-content: center;     /* Căn giữa ngang */
-		  align-items: center;         /* ✅ Căn giữa dọc */
-		  width: 100%;
-		  height: 100vh;
-		  padding: 0;
-		  margin: 0;
-		  box-sizing: border-box;
-		}
-	  .solo-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
+
+	  .print-single-page .text-box {
+		font-size: 20px;
+		background: #f0f0f0;
+		padding: 20px;
+		height: auto;
 	  }
 	}
-
 
   </style>
 </head>
 <body>
-  <h2 class="no-print">Demo In Hình Ảnh Tuỳ Số Lượng</h2>
 
-  <div class="settings no-print">
-    <label>
-      Số hình/trang (nếu không in riêng): 
-      <select id="imagesPerPage">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4" selected>4</option>
-      </select>
-    </label>
-    <button onclick="preparePrint()">In</button>
+  <div class="no-print">
+    <button onclick="printSelected()">In các mục đã chọn</button>
+    <p>Tích vào hình để in riêng từng trang (hình không tích sẽ in chung theo 2x2 / 4 hình/trang)</p>
   </div>
 
-  <div class="gallery no-print">
-    <!-- 10 hình demo -->
-    <script>
-      for (let i = 1; i <= 10; i++) {
-        document.write(`
-          <div class="image-container" data-print-alone="false">
-            <img src="https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg" alt="Ảnh ${i}">
-            <label class="tooltip-select">
-              <input type="checkbox" onchange="toggleAlone(this)">
-              In riêng
-            </label>
-          </div>
-        `);
-      }
-    </script>
+  <div class="image-grid" id="preview">
+    <!-- Preview hình -->
   </div>
 
-  <div id="print-section"></div>
+  <div class="print-container" id="print-area">
+    <!-- Khu vực in -->
+  </div>
 
   <script>
-    function toggleAlone(checkbox) {
-      const container = checkbox.closest('.image-container');
-      container.setAttribute('data-print-alone', checkbox.checked ? 'true' : 'false');
-    }
+    const data = [
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+      { type: 'text', content: 'Nội dung text 1 (giả hình)' },
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+      { type: 'text', content: 'Nội dung text 2 (giả hình)' },
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+      { type: 'text', content: 'Nội dung text 3 (giả hình)' },
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+      { type: 'text', content: 'Nội dung text 4 (giả hình)' },
+      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
+    ];
 
-    function preparePrint() {
-      const imagesPerPage = parseInt(document.getElementById('imagesPerPage').value) || 4;
+    const preview = document.getElementById('preview');
+    const printArea = document.getElementById('print-area');
 
-      const allImages = document.querySelectorAll('.image-container');
-      let shared = [];
-      let solo = [];
+    // Hiển thị preview
+    data.forEach((item, index) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'img-wrapper';
 
-      allImages.forEach(container => {
-        const img = container.querySelector('img');
-        const src = img.src;
-        const isAlone = container.getAttribute('data-print-alone') === 'true';
-        const html = `<div class="print-image"><img src="${src}" alt=""></div>`;
-        if (isAlone) solo.push(html);
-        else shared.push(html);
-      });
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.dataset.index = index;
 
-      let content = ``;
+      wrapper.appendChild(checkbox);
 
-      for (let i = 0; i < shared.length; i += imagesPerPage) {
-        const group = shared.slice(i, i + imagesPerPage);
-		  // Nếu là nhóm 3 hình trong layout 4 → thêm ô trống để đủ 4
-		  if (imagesPerPage === 3 && group.length === 3) {
-			group.push('<div class="print-image empty"></div>'); // Thêm ô trống
-		  }
-		  content += `<div class="shared-group count-${imagesPerPage}">${group.join('')}</div>`;
+      if (item.type === 'image') {
+        const img = document.createElement('img');
+        img.src = item.src;
+        wrapper.appendChild(img);
+      } else if (item.type === 'text') {
+        const box = document.createElement('div');
+        box.className = 'text-box';
+        box.innerText = item.content;
+        wrapper.appendChild(box);
       }
 
-      solo.forEach(img => {
-        content += `<div class="solo-image">${img}</div>`;
+      preview.appendChild(wrapper);
+    });
+
+    function printSelected() {
+      const checkboxes = document.querySelectorAll('.img-wrapper input[type="checkbox"]');
+      const selectedIndexes = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => parseInt(cb.dataset.index));
+
+      printArea.innerHTML = '';
+
+      // In từng mục riêng
+      selectedIndexes.forEach(idx => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'print-single-page';
+        wrapper.appendChild(createPrintItem(data[idx]));
+        printArea.appendChild(wrapper);
       });
 
-      const printSection = document.getElementById('print-section');
-      printSection.innerHTML = content.trim();
-      document.body.classList.add('printing');
+      // In các mục chung 4/trang
+      const remaining = data.filter((_, i) => !selectedIndexes.includes(i));
+      for (let i = 0; i < remaining.length; i += 4) {
+        const page = document.createElement('div');
+        page.className = 'print-page';
+        for (let j = i; j < i + 4 && j < remaining.length; j++) {
+          page.appendChild(createPrintItem(remaining[j]));
+        }
+        printArea.appendChild(page);
+      }
 
-      setTimeout(() => {
-        window.print();
-        setTimeout(() => {
-          document.body.classList.remove('printing');
-          printSection.innerHTML = '';
-        }, 500);
-      }, 50);
+      window.print();
+    }
+
+    function createPrintItem(item) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'print-item';
+
+      if (item.type === 'image') {
+        const img = document.createElement('img');
+        img.src = item.src;
+        wrapper.appendChild(img);
+      } else if (item.type === 'text') {
+        const box = document.createElement('div');
+        box.className = 'text-box';
+        box.innerText = item.content;
+        wrapper.appendChild(box);
+      }
+
+      return wrapper;
     }
   </script>
 </body>
