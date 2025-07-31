@@ -2,52 +2,67 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Demo In Không Footer</title>
+  <title>In Ảnh Không Footer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
+    #content {
+      width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #333;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
     button {
+      margin-top: 30px;
       padding: 10px 20px;
       font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h2>Demo In Trên iOS Không Footer Domain</h2>
-  <button onclick="printWithoutFooter()">In nội dung</button>
+  <div id="content">
+    <h1>Hóa đơn thanh toán</h1>
+    <p>Tên khách hàng: Nguyễn Văn A</p>
+    <p>Sản phẩm: Áo thun</p>
+    <p>Giá: 200.000đ</p>
+  </div>
+
+  <div style="text-align: center;">
+    <button onclick="printClean()">In sạch không footer (iOS)</button>
+  </div>
 
   <script>
-    function printWithoutFooter() {
-      const contentHTML = `
-        <div style="padding:40px; font-size:18px; text-align:center;">
-          <h1>Hóa đơn thanh toán</h1>
-          <p>Tên khách hàng: Nguyễn Văn A</p>
-          <p>Sản phẩm: Áo thun</p>
-          <p>Giá: 200.000đ</p>
-        </div>
-      `;
+    function printClean() {
+      html2canvas(document.getElementById("content")).then(canvas => {
+        const image = canvas.toDataURL("image/png");
 
-      const fullHTML = `
-        <html>
-          <head>
-            <title></title>
-            <style>
-              @media print {
-                @page { margin: 0; }
-                body { margin: 0; }
-              }
-              body {
-                font-family: Arial, sans-serif;
-              }
-            </style>
-          </head>
-          <body onload="window.print();">
-            ${contentHTML}
-          </body>
-        </html>
-      `;
+        // Tạo trang trắng chứa ảnh
+        const html = `
+          <html>
+            <head>
+              <title></title>
+              <style>
+                @media print {
+                  @page { margin: 0; }
+                  body { margin: 0; }
+                  img { width: 100%; display: block; }
+                }
+                body { margin: 0; padding: 0; text-align: center; }
+              </style>
+            </head>
+            <body>
+              <img src="${image}" onload="window.print()" />
+            </body>
+          </html>
+        `;
 
-      const blob = new Blob([fullHTML], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+        // Gán trực tiếp vào tab hiện tại → Safari iOS không còn footer!
+        document.open();
+        document.write(html);
+        document.close();
+      });
     }
   </script>
 </body>
