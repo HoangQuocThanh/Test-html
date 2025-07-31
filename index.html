@@ -1,232 +1,53 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Print Images Smart</title>
+  <title>Demo In Không Footer</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
     }
-
-    .no-print {
-      padding: 10px;
-      background: #f5f5f5;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid #ccc;
-    }
-
-    .image-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-
-    .img-wrapper {
-      position: relative;
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .img-wrapper input[type="checkbox"] {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      transform: scale(1.3);
-    }
-
-    .img-wrapper img,
-    .img-wrapper .text-box {
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-    }
-
-    .text-box {
-      background: #eaeaea;
-      height: 350px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .print-container {
-      display: none;
-    }
-
-    /* IN ẤN */
-    @media print {
-	  @page {
-		size: A4 portrait;
-		margin: 0;
-	  }
-
-	  body {
-		margin: 0;
-		padding: 0;
-	  }
-
-	  .no-print, .image-grid {
-		display: none !important;
-	  }
-
-	  .print-container {
-		display: block;
-	  }
-
-	  .print-single-page {
-		page-break-before: always;
-		width: 100%;
-		height: 100%;
-		text-align: center;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	  }
-
-	  .print-single-page img,
-	  .print-single-page .text-box {
-		max-width: 100%;
-		max-height: 95vh;
-		object-fit: contain;
-		margin: auto;
-	  }
-
-	  .print-single-page .text-box {
-		font-size: 20px;
-		background: #f0f0f0;
-		padding: 20px;
-	  }
-
-	  .print-page {
-		page-break-after: always;
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		grid-auto-rows: auto;
-		padding: 0;
-		margin: 0;
-	  }
-
-	  .print-item img,
-	  .print-item .text-box {
-		width: 100%;
-		height: auto;
-	  }
-	}
-
-
   </style>
 </head>
 <body>
-
-  <div class="no-print">
-    <button onclick="printSelected()">In các mục đã chọn</button>
-    <p>Tích vào hình để in riêng từng trang (hình không tích sẽ in chung theo 2x2 / 4 hình/trang)</p>
-  </div>
-
-  <div class="image-grid" id="preview">
-    <!-- Preview hình -->
-  </div>
-
-  <div class="print-container" id="print-area">
-    <!-- Khu vực in -->
-  </div>
+  <h2>Demo In Trên iOS Không Footer Domain</h2>
+  <button onclick="printWithoutFooter()">In nội dung</button>
 
   <script>
-    const data = [
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-      { type: 'text', content: 'Nội dung text 1 (giả hình)' },
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-      { type: 'text', content: 'Nội dung text 2 (giả hình)' },
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-      { type: 'text', content: 'Nội dung text 3 (giả hình)' },
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-      { type: 'text', content: 'Nội dung text 4 (giả hình)' },
-      { type: 'image', src: 'https://cdn.tgdd.vn/hoi-dap/1355633/kich-thuoc-kho-giay-a4-la-bao-nhieu-cach-chon-in-giay-a4%203.jpg' },
-    ];
+    function printWithoutFooter() {
+      const contentHTML = `
+        <div style="padding:40px; font-size:18px; text-align:center;">
+          <h1>Hóa đơn thanh toán</h1>
+          <p>Tên khách hàng: Nguyễn Văn A</p>
+          <p>Sản phẩm: Áo thun</p>
+          <p>Giá: 200.000đ</p>
+        </div>
+      `;
 
-    const preview = document.getElementById('preview');
-    const printArea = document.getElementById('print-area');
+      const fullHTML = `
+        <html>
+          <head>
+            <title></title>
+            <style>
+              @media print {
+                @page { margin: 0; }
+                body { margin: 0; }
+              }
+              body {
+                font-family: Arial, sans-serif;
+              }
+            </style>
+          </head>
+          <body onload="window.print();">
+            ${contentHTML}
+          </body>
+        </html>
+      `;
 
-    // Hiển thị preview
-    data.forEach((item, index) => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'img-wrapper';
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.dataset.index = index;
-
-      wrapper.appendChild(checkbox);
-
-      if (item.type === 'image') {
-        const img = document.createElement('img');
-        img.src = item.src;
-        wrapper.appendChild(img);
-      } else if (item.type === 'text') {
-        const box = document.createElement('div');
-        box.className = 'text-box';
-        box.innerText = item.content;
-        wrapper.appendChild(box);
-      }
-
-      preview.appendChild(wrapper);
-    });
-
-    function printSelected() {
-      const checkboxes = document.querySelectorAll('.img-wrapper input[type="checkbox"]');
-      const selectedIndexes = Array.from(checkboxes)
-        .filter(cb => cb.checked)
-        .map(cb => parseInt(cb.dataset.index));
-
-      printArea.innerHTML = '';
-
-      // In từng mục riêng
-      selectedIndexes.forEach(idx => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'print-single-page';
-        wrapper.appendChild(createPrintItem(data[idx]));
-        printArea.appendChild(wrapper);
-      });
-
-      // In các mục chung 4/trang
-      const remaining = data.filter((_, i) => !selectedIndexes.includes(i));
-      for (let i = 0; i < remaining.length; i += 4) {
-        const page = document.createElement('div');
-        page.className = 'print-page';
-        for (let j = i; j < i + 4 && j < remaining.length; j++) {
-          page.appendChild(createPrintItem(remaining[j]));
-        }
-        printArea.appendChild(page);
-      }
-
-      window.print();
-    }
-
-    function createPrintItem(item) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'print-item';
-
-      if (item.type === 'image') {
-        const img = document.createElement('img');
-        img.src = item.src;
-        wrapper.appendChild(img);
-      } else if (item.type === 'text') {
-        const box = document.createElement('div');
-        box.className = 'text-box';
-        box.innerText = item.content;
-        wrapper.appendChild(box);
-      }
-
-      return wrapper;
+      const blob = new Blob([fullHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
     }
   </script>
 </body>
